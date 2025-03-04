@@ -1,7 +1,12 @@
 import express from 'express';
-import cors from 'cors';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import path from 'node:path';
+
+import db from './config/connection.js'
+import { ApolloServer } from '@apollo/server';// Note: Import from @apollo/server-express
+import { expressMiddleware } from '@apollo/server/express4';
+import { typeDefs, resolvers } from './schemas/index.js';
+import { authenticateToken } from './utils/auth.js';
+
 
 dotenv.config();
 
@@ -12,24 +17,35 @@ const server = new ApolloServer({
   resolvers,
 })
 
-const {url} = await StartApolloServer(
+const __dirname =path.resolve();
+const startApolloServer = async () => {
+  await server.start();
+  await db();
 
-  {listen:{port:3001},}
+  const PORT = process.env.PORT || 3001;
+  const app = express();
 
-)
-const app = express();
+  app.use(express.urlencoded({ extended: false }));
+  app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+  app.use('/graphql', expressMiddleware(server as any,
+    {
+      context: authenticateToken as any
+    }
+  ));
 
+  if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(`${__dirname}/../client/dist`));
 
-app.use(express.json()); 
-app.use(cors({ origin: ['http://localhost:3001', 'http://127.0.0.1:5173'] }));
+    app.get('*', (_req, res) => {
+      res.sendFile(`${__dirname}/../client/dist/index.html`);
+    });
+  }
 
-app.use(routes)
+  app.listen(PORT, () => {
+    console.log(`API server running on port ${PORT}!`);
+    console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
+  });
+};
 
-app.get('/', (req, res) => {
-  res.send('Welcome to the Sport API ');
-});
-
+startApolloServer();

@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
-import userRoutes from './user-routes.js';
+import sportRouter from './sportRouter.js';
 
-router.use('/users', userRoutes);
+router.use('/sport', sportRouter);
 
 export default router;

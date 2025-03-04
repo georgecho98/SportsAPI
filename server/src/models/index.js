@@ -1,3 +1,3 @@
-import Sport from './Sport.js';
+import Sport from './Team.js';
 
 export default { Sport };

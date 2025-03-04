@@ -12,31 +12,28 @@ import {
 } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
-import { searchGoogleBooks } from '../utils/API';
-import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
-import { SportAPI } from '../interfaces/SportAPI';
-import { SAVE_BOOK } from '../utils/mutations';
-// import SavedBooks from './SavedBooks';
+import { saveTeam, searchSport } from '../utils/API';
+import { saveTeamIds, getSavedTeamIds } from '../utils/localStorage';
+import { Team} from '../models/Team';
+import { SAVE_TEAM } from '../utils/mutation';
 
 const SearchSport = () => {
-  // create state for holding returned google api data
-  const [searchedBooks, setSearchedBooks] = useState<Book[]>([]);
+  // create state for holding returnedapi data
+  const [searchedTeams, setSearchedTeams]= useState<Team>([]);
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState('');
 
   // create state to hold saved bookId values
-  const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
-  const [saveBook, {error}]= useMutation(SAVE_BOOK);
+  const [savedTeamIds, setSavedTeamIds] = useState(getSavedTeamIds());
+  const [saveTeam, {error}]= useMutation(SAVE_TEAM);
   
-  
-  // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
-  // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
+
   useEffect(() => {
-    return () => saveBookIds(savedBookIds);
-  }, [savedBookIds]);
+    return () => saveTeamIds(savedTeamIds);
+  }, [savedTeamIds]);
 
   // create method to search for books and set state on form submit
-  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
 
     if (!searchInput) {
@@ -44,7 +41,7 @@ const SearchSport = () => {
     }
 
     try {
-      const response = await searchGoogleBooks(searchInput);
+      const response = await searchSport(searchInput);
 
       if (!response.ok) {
         throw new Error('something went wrong!');
@@ -52,15 +49,16 @@ const SearchSport = () => {
 
       const { items } = await response.json();
 
-      const bookData = items.map((book: GoogleAPIBook) => ({
-        bookId: book.id,
-        authors: book.volumeInfo.authors || ['No author to display'],
-        title: book.volumeInfo.title,
-        description: book.volumeInfo.description,
-        image: book.volumeInfo.imageLinks?.thumbnail || '',
+      const teamData = items.map((team) => ({
+        teamId: team.id,
+        
+        authors: team.volumeInfo.authors || ['No author to display'],
+        title: team.volumeInfo.title,
+        description: team.volumeInfo.description,
+        image: team.volumeInfo.imageLinks?.thumbnail || '',
       }));
 
-      setSearchedBooks(bookData);
+      setSearchedTeams(teamData);
       setSearchInput('');
     } catch (err) {
       console.error(err);
@@ -69,10 +67,10 @@ const SearchSport = () => {
 
   
   // create function to handle saving a book to our database
-  const handleSaveBook = async (bookId) => {
+  const handleSaveTeam = async (teamId) => {
     
-    // find the book in `searchedBooks` state by the matching id
-    const bookToSave = searchedBooks.find((book) => book.bookId === bookId)!;
+    // find the book in `saveTeam` state by the matching id
+    const teamToSave = searchedTeams.find((team) => team.teamId === teamId)!;
     // get token
     const token = Auth.loggedIn() ? Auth.getToken() : null;
 
@@ -81,23 +79,23 @@ const SearchSport = () => {
     }
 
     try {
-      // const response = await saveBook(bookToSave, token);
-      const {data} = await saveBook({
+      // const response = await saveBook(teamToSave, token);
+      const {data} = await saveTeam({
         variables:{
-          bookInput:{
-            bookId: bookToSave.bookId,
-            authors:bookToSave.authors,
-            description:bookToSave.description,
-            title:bookToSave.title,
-            image:bookToSave.image,
+          teamInput:{
+            teamId: teamToSave.teamId,
+            authors:teamToSave.authors,
+            description:teamToSave.description,
+            title:teamToSave.title,
+            imageLinks:teamToSave.imageLinks,
                     
           }
        }
 
       })
 
-      if (data && data.saveBook) {
-        setSavedBookIds([...savedBookIds, bookToSave.bookId]);
+      if (data && data.saveTeam) {
+        setSavedTeamIds([...savedTeamIds, teamToSave.teamId]);
       
       } else {
         throw new Error('something went wrong!');
@@ -112,7 +110,7 @@ const SearchSport = () => {
     <>
       <div className="text-light bg-dark p-5">
         <Container>
-          <h1>Search for Books!</h1>
+          <h1>Search for Team!</h1>
           <Form onSubmit={handleFormSubmit}>
             <Row>
               <Col xs={12} md={8}>
@@ -122,7 +120,7 @@ const SearchSport = () => {
                   onChange={(e) => setSearchInput(e.target.value)}
                   type='text'
                   size='lg'
-                  placeholder='Search for a book'
+                  placeholder='Search for a team'
                 />
               </Col>
               <Col xs={12} md={4}>
@@ -137,30 +135,30 @@ const SearchSport = () => {
 
       <Container>
         <h2 className='pt-5'>
-          {searchedBooks.length
-            ? `Viewing ${searchedBooks.length} results:`
+          {saveTeam.length
+            ? `Viewing ${saveTeam.length} results:`
             : 'Search for a book to begin'}
         </h2>
         <Row>
-          {searchedBooks.map((book) => {
+          {saveTeam.map((team) => {
             return (
-              <Col md="4" key={book.bookId}>
+              <Col md="4" key={team.teamId}>
                 <Card border='dark'>
                   {book.image ? (
-                    <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' />
+                    <Card.Img src={team.image} alt={`The cover for ${team.title}`} variant='top' />
                   ) : null}
                   <Card.Body>
-                    <Card.Title>{book.title}</Card.Title>
-                    <p className='small'>Authors: {book.authors}</p>
-                    <Card.Text>{book.description}</Card.Text>
+                    <Card.Title>{team.title}</Card.Title>
+                    <p className='small'>Authors: {team.authors}</p>
+                    <Card.Text>{team.description}</Card.Text>
                     {Auth.loggedIn() && (
                       <Button
-                        disabled={savedBookIds?.some((savedBookId: string) => savedBookId === book.bookId)}
+                        disabled={savedTeamIds?.some((savedTeamId) => savedTeamId === team.teamId)}
                         className='btn-block btn-info'
-                        onClick={() => handleSaveBook(book.bookId)}>
-                        {savedBookIds?.some((savedBookId: string) => savedBookId === book.bookId)
-                          ? 'This book has already been saved!'
-                          : 'Save this Book!'}
+                        onClick={() => handleSaveTeam(team.teamId)}>
+                        {savedTeamIds?.some((savedTeamId) => savedTeamId === team.teamId)
+                          ? 'This team has already been saved!'
+                          : 'Save this team!'}
                       </Button>
                     )}
                   </Card.Body>

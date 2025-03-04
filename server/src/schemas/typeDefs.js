@@ -4,13 +4,11 @@ const typeDefs =`
         me(_id: ID!): User 
     }
 
-
     type AllTeam {
         _id: ID!
         username: String
         email: String
-   
-    }
+       }
 
     type Team {
         teamId: ID!
@@ -22,8 +20,8 @@ const typeDefs =`
         abbreviation: String
     }
 
-  
-    }
+    
+    
     type Auth{
         token: String
         user: User
@@ -31,14 +29,10 @@ const typeDefs =`
     }
     
     type Mutation {
-        login(email: String, password:String):Auth
-        addUser(username:String, email:String, password:String):Auth
+        
         saveTeam(conference:String, division:String, city:String, teamId: ID!, name:String, full_name:String, abbreviation:String):User
         removeTeam(teamId: ID!):User
     
-    }
-
-
-`;
+    }`;
 
 export default typeDefs;

@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import type { ChangeEvent, FormEvent } from 'react';
+import {ChangeEvent, FormEvent} from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
-import { ADD_USER } from '../utils/mutations';
+// import { ADD_USER } from '../utils/mutations';
 // import { createUser } from '../utils/API';
 import Auth from '../utils/auth';
-import type { User } from '../interfaces/User';
+import User  from '../models/User';
 import {useMutation} from '@apollo/client';
 
 
 
 // biome-ignore lint/correctness/noEmptyPattern: <explanation>
-const SignupForm = ({}: {handleModalClose}) => {
+const SignupForm = ({handleModalClose}) => {
   // set initial form state
   const [userFormData, setUserFormData] = useState<User>({ username: '', email: '', password: '', savedBooks: [] });
   // set state for form validation
@@ -19,7 +19,7 @@ const SignupForm = ({}: {handleModalClose}) => {
   const [showAlert, setShowAlert] = useState(false);
 
   // `SignupForm.tsx`: Replace the `addUser()` functionality imported from the `API` file with the `ADD_USER` mutation functionality.
-  const [createUser]:any = useMutation(ADD_USER);
+  const [createUser]= useMutation(ADD_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;

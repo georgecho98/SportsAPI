@@ -22,24 +22,23 @@ import { gql } from '@apollo/client';
 //   }
 // `;
 export const SAVE_TEAM = gql`
-  mutation saveTeam($author:[String] , $description:String, $title:String, $bookId:ID!, $image:String, $link:String) {
-    saveTeam(author:$author , description:$description, title:$title, bookId:$bookId, image:$image, link:$link) {
-        _id
-        author
-        description
-        title
-        bookId
-        image
-        link
+  mutation saveTeam($conference:[String] , $division:String, $city:String, $teamId:ID!, $name:String, $full_name:String, $abbreviation:String) {
+    saveTeam(conference:$conference , division:$division, city:$city, teamId:$teamId, name:$name, full_name:$full_name, abbreviation:$abbreviation) {
+        teamId
+        conference
+        division
+        city
+        name
+        abbreviation
     }
   }
 `;
 
 export const REMOVE_TEAM = gql`
-  mutation removeTeam($bookId:ID) {
-    removeTeam(bookId:$bookId) {
+  mutation removeTeam($teamId:ID) {
+    removeTeam(teamId:$teamId) {
       _id
-      bookId
+      teamId
     }
   }
 `;

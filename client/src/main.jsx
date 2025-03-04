@@ -14,9 +14,7 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import App from './App';
-import Home from './pages/Home';
-import Matchup from './pages/Matchup';
-import Vote from './pages/Vote';
+
 import NotFound from './pages/NotFound';
 
 const router = createBrowserRouter([
@@ -31,10 +29,7 @@ const router = createBrowserRouter([
       }, {
         path: '/result',
         element: <scoreResult />
-      }, {
-        path: '/result/:id',
-        element: <xx />
-      },
+      }
     ],
   },
 ]);

@@ -1,5 +1,4 @@
-import type { User } from '../interfaces/User.jsx';
-import type { Book } from '../interfaces/Book.jsx';
+
 
 // route to get logged in user's info (needs the token)
 // export const getMe = (token: string) => {
@@ -32,29 +31,64 @@ import type { Book } from '../interfaces/Book.jsx';
 // };
 
 // save book data for a logged in user
-export const saveTeam = (teamData, token) => {
-  return fetch('/api/users', {
-    method: 'PUT',
+// export const saveTeam = (teamData, token) => {
+//   return fetch('/api/team', {
+//     method: 'GET',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       authorization: `Bearer ${token}`,
+//       authorization: process.env.YOUR_API_KEY
+//     },
+//     body: JSON.stringify(teamData),
+//   });
+// };
+
+// // remove saved book data for a logged in user
+// export const deleteTeam = (teamId, token) => {
+//   return fetch(`/api/users/teams/${teamId}`, {
+//     method: 'DELETE',
+//     headers: {
+//       authorization: `Bearer ${token}`,
+//       authorization: process.env.YOUR_API_KEY
+//     },
+//   });
+// };
+
+export const saveAllTeam = (_query) => {
+  return fetch('https://api.balldontlie.io/v1/teams', {
+    method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      authorization: `Bearer ${token}`,
+       authorization: process.env.YOUR_API_KEY
     },
     body: JSON.stringify(teamData),
   });
 };
 
+export const saveTeam = (query) => {
+  return fetch(`https://api.balldontlie.io/v1/teams/${query}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+       authorization: process.env.YOUR_API_KEY
+    },
+    body: JSON.stringify(teamData),
+  });
+};
+
+
 // remove saved book data for a logged in user
-export const deleteTeam = (teamId, token) => {
-  return fetch(`/api/users/books/${teamId}`, {
+export const deleteTeam = (teamId) => {
+  return fetch(`https://api.balldontlie.io/v1/teams/${teamId}`, {
     method: 'DELETE',
     headers: {
-      authorization: `Bearer ${token}`,
+      authorization: process.env.YOUR_API_KEY
     },
   });
 };
 
 // make a search to google books api
-// https://www.googleapis.com/books/v1/volumes?q=harry+potter
-export const searchGoogleBooks = (query) => {
-  return fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}`);
+
+export const searchSport = (query) => {
+  return fetch(`https://api.balldontlie.io/v1/teams${query}`);
 };

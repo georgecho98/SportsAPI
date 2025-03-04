@@ -1,35 +1,23 @@
 import { Schema } from 'mongoose';
-
+import {Team} from './Team.js'
 
 // This is a subdocument schema, it won't become its own model but we'll use it as the schema for the User's `savedBooks` array in User.js
 const playerSchema = new Schema({
-  teamId:
-    {
-      type: String,
-      required: true
-    },
+  _id,
   
-  conference: {
+  first_name: {
     type: String,
     required: true,
   },
-  // saved book id from GoogleBooks
-  division: {
+
+  last_name: {
     type: String,
     required: true,
   },
-  city: {
+  position: {
     type: String,
   },
-  name: {
-    type: String,
-  },
-  full_name: {
-    type: String,
-  },
-  abbreviation: {
-    type: String,
-  }
+  team: Team
 });
 
 

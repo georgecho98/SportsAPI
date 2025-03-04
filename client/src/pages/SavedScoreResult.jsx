@@ -1,15 +1,15 @@
 import { useState, useEffect, SetStateAction } from 'react';
 import { Container, Card, Button, Row, Col } from 'react-bootstrap';
 
-// import { getMe, deleteBook } from '../utils/API';
+import { saveTeam, deleteTeam } from '../utils/API';
 import Auth from '../utils/auth';
-import { removeBookId } from '../utils/localStorage';
-import type { User } from '../interfaces/User';
+import { removeTeamId } from '../utils/localStorage';
+import { User } from '../models/User';
 import { GET_ME } from '../utils/queries'; 
 import {useQuery, useMutation} from  '@apollo/client';
 
 
-import { REMOVE_BOOK } from '../utils/mutations';
+import { REMOVE_TEAM} from '../utils/mutations';
 
 const ScoreResult = () => {
 
@@ -17,7 +17,7 @@ const ScoreResult = () => {
     username: '',
     email: '',
     password: '',
-    savedBooks: [],
+    savedTeams: [],
   });
 
   // use this to determine if `useEffect()` hook needs to run again
@@ -39,21 +39,21 @@ const ScoreResult = () => {
     if (error) return <h2>Error: {error.message}</h2>;
 
 
-  const{deleteBook} :any = useMutation(REMOVE_BOOK, {
+  const{deleteTeam} = useMutation(REMOVE_TEAM, {
     onCompleted: 
-    (data: { removeBook: SetStateAction<User>; }) => 
+    (data) => 
       {
       // Assuming the mutation returns the updated user data
-      setUserData(data.removeBook); // Adjust based on your mutation response
+      setUserData(data.removeTeam); // Adjust based on your mutation response
     },
-    onError: (error: any) => {
-      console.error("Error deleting book:", error);
+    onError: (error) => {
+      console.error("Error deleting Team:", error);
     }
   });
 
   
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
-  const handleDeleteBook = async (bookId: string) => {
+  const handleDeleteTeam= async (teamId) => {
     
     const token = Auth.loggedIn() ? Auth.getToken() : null;
 
@@ -63,9 +63,9 @@ const ScoreResult = () => {
 
     try {
       // const response = await deleteBook(bookId, token);
-      await deleteBook({variables:{bookId}})
+      await deleteTeam({variables:{teamId}})
 
-      removeBookId(bookId);
+      removeTeamId(teamId);
     } catch (err) {
       console.error(err);
     }
@@ -81,39 +81,39 @@ const ScoreResult = () => {
       <div className='text-light bg-dark p-5'>
         <Container>
           {userData.username ? (
-            <h1>Viewing {userData.username}'s saved books!</h1>
+            <h1>Viewing {userData.username}'s saved teams!</h1>
           ) : (
-            <h1>Viewing saved books!</h1>
+            <h1>Viewing saved teams!</h1>
           )}
         </Container>
       </div>
       <Container>
         <h2 className='pt-5'>
-          {userData.savedBooks.length
-            ? `Viewing ${userData.savedBooks.length} saved ${
-                userData.savedBooks.length === 1 ? 'book' : 'books'
+          {userData.savedTeams.length
+            ? `Viewing ${userData.savedTeams.length} saved ${
+                userData.savedTeams.length === 1 ? 'team' : 'teams'
               }:`
-            : 'You have no saved books!'}
+            : 'You have no saved teams!'}
         </h2>
         <Row>
-          {userData.savedBooks.map((book) => {
+          {userData.savedTeams.map((team) => {
             return (
               <Col md='4'>
-                <Card key={book.bookId} border='dark'>
-                  {book.image ? (
+                <Card key={team.teamId} border='dark'>
+                  {team.image ? (
                     <Card.Img
-                      src={book.image}
-                      alt={`The cover for ${book.title}`}
+                      src={team.image}
+                      alt={`The cover for ${team.title}`}
                       variant='top'
                     />
                   ) : null}
                   <Card.Body>
-                    <Card.Title>{book.title}</Card.Title>
-                    <p className='small'>Authors: {book.authors}</p>
-                    <Card.Text>{book.description}</Card.Text>
+                    <Card.Title>{team.title}</Card.Title>
+                    <p className='small'>Authors: {team.authors}</p>
+                    <Card.Text>{team.description}</Card.Text>
                     <Button
                       className='btn-block btn-danger'
-                      onClick={() => handleDeleteBook(book.bookId)}
+                      onClick={() => handleDeleteTeam(team.teamId)}
                     >
                       Delete this Book!
                     </Button>

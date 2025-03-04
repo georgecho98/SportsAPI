@@ -1,6 +1,6 @@
 
-import { saveTeam } from '../controllers/user-controller.js';
-import  User from '../models/User.js';
+import { saveTeam, deleteTeam } from '../controllers/user-controller.js';
+import  Team from '../models/Team.js';
 import { signToken, AuthenticationError } from '../services/auth.js';
 
 
@@ -21,23 +21,23 @@ const resolvers = {
     Mutation: {
 
 
-        saveTeam: async (_parent, {saveTeamData }: { bookData }, context) => {
+        saveTeam: async (_parent, {saveTeamData }, context) => {
             if (context.user) {
-                const book = await saveTeam.findOneAndUpdate(
-                    { _id: context.user._id },
-                    { $addToSet: { savedBooks: bookData } },
+                const team = await Team.findOneAndUpdate(
+                    { _id: context.team._id },
+                    { $addToSet: { saveTeam } },
                     { new: true }
                 );
 
-                return book;
+                return team;
             }
             throw new AuthenticationError('You need to be logged in!');
         },
 
-        removeTeam: async (_parent, { sId }: { s }, context)=> {
+        removeTeam: async (_parent, { teamId }, context)=> {
             if (context) {
-                const removeB = await User.findOneAndUpdate(
-                    { _id: context.user._id },
+                const removeB = await Team.findOneAndUpdate(
+                    { _id: context.team._id },
                     { $pull: { savedTeam: { teamId } } },
                     { new: true }
                 );
